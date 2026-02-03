@@ -471,6 +471,12 @@
             color: #000;
             opacity: 1;
         }
+
+        @media(max-width:540px) {
+            .float {
+                margin-left: -13px;
+            }
+        }
     </style>
 </head>
 
@@ -654,7 +660,7 @@
             </div>
         </div>
 
-        <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 scroll-indicator cursor-pointer z-[10]">
+        <div class="absolute float bottom-8 left-1/2 transform -translate-x-1/2 scroll-indicator cursor-pointer z-[10]">
             <a href="#doctors">
                 <div class="w-8 h-12 rounded-full border-2 border-[#05316b] flex items-start justify-center p-2">
                     <div class="w-1.5 h-3 bg-[#05316b] rounded-full"></div>
@@ -869,8 +875,8 @@
                         </div>
                     </div>
                     <div class="mt-6 pt-6 border-t border-teal-100 flex flex-wrap gap-2">
-                        <span class="px-3 py-1 rounded-full  text-[#2d64c8] text-sm font-medium">Robotic
-                            Surgery</span>
+                        <span class="px-3 py-1 rounded-full  text-[#2d64c8] text-sm font-medium">Ilizarov Limb Salvage
+                            Surgries</span>
                         <span class="px-3 py-1 rounded-full  text-[#2d64c8] text-sm font-medium">Sports
                             Medicine</span>
                         <span class="px-3 py-1 rounded-full  text-[#2d64c8] text-sm font-medium">Paediatric
@@ -1325,7 +1331,8 @@
                         <a href="#contact" class="inline-flex items-center gap-2 px-4 py-2.5 text-sm
                             sm:gap-3 sm:px-6 sm:py-3 sm:text-base
                             lg:px-8 lg:py-4 lg:text-lg
-                            rounded-full text-white font-semibold shadow-lg transition btn-primary" style="background-color:#2d64c8;">
+                            rounded-full text-white font-semibold shadow-lg transition btn-primary"
+                            style="background-color:#2d64c8;">
                             Book Your Private Consultation
                             <span class="text-xl">→</span>
                         </a>
@@ -1824,20 +1831,26 @@
     </script>
     <script>
         let modalTimer;
+
         function openModal() {
+            if (localStorage.getItem('formSubmitted') === 'true') return;
             document.getElementById("customModal").style.display = "block";
         }
+
         function closeModal() {
             document.getElementById("customModal").style.display = "none";
             clearTimeout(modalTimer);
-            modalTimer = setTimeout(openModal, 60000);
+
+            if (localStorage.getItem('formSubmitted') !== 'true') {
+                modalTimer = setTimeout(openModal, 90000);
+            }
         }
         window.onload = function () {
-            modalTimer = setTimeout(openModal, 60000);
+            if (localStorage.getItem('formSubmitted') !== 'true') {
+                modalTimer = setTimeout(openModal, 90000);
+            }
         };
     </script>
-
-
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const form = document.getElementById('contactFormModal');
@@ -1870,60 +1883,8 @@
                             console.log('Success:', data);
                             if (data.status === 'success') {
                                 alert('Form submitted successfully!');
+                                localStorage.setItem('formSubmitted', 'true');
                                 document.getElementById("customModal").style.display = "none";
-                                form.reset();
-                            } else {
-                                if (data.errors) {
-                                    if (data.errors.phone) alert(data.errors.phone);
-                                    if (data.errors.name) alert(data.errors.name);
-                                } else {
-                                    alert(data.message || 'An error occurred');
-                                }
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Error:', error);
-                            alert('An error occurred during form submission.');
-                        })
-                        .finally(() => {
-                            submitButton.textContent = 'Submit';
-                            submitButton.disabled = false;
-                        });
-                });
-            }
-        });
-    </script>
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const form = document.getElementById('sidebarForm');
-            // Handle form submission
-            if (form) {
-                form.addEventListener('submit', function (event) {
-                    event.preventDefault();
-                    if (form.dataset.submitted) return;
-                    const submitButton = form.querySelector('button[type="submit"]');
-                    submitButton.textContent = 'Submitting...';
-                    submitButton.disabled = true;
-
-                    const formData = new FormData(form);
-
-                    fetch(form.action, {
-                        method: 'POST',
-                        body: formData
-                    })
-                        .then(response => response.text())
-                        .then(text => {
-                            console.log("Raw response:", text);
-                            let data = {};
-                            try {
-                                data = JSON.parse(text);
-                            } catch (e) {
-                                alert("Invalid JSON response from server");
-                                throw e;
-                            }
-                            console.log('Success:', data);
-                            if (data.status === 'success') {
-                                alert('Form submitted successfully!');
                                 form.reset();
                             } else {
                                 if (data.errors) {
